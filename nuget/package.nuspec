@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+   <metadata minClientVersion="2.8.1">
+       <id>Almg.Signer.XAdES</id>
+       <version>0.9.0</version>
+       <title>A XAdES signer library for Xamarin Android and Windows</title>
+       <authors>almg</authors>
+       <owners>almg</owners>
+       <licenseUrl>https://github.com/silegis-mg/XadesSigner/blob/master/LICENSE.md</licenseUrl>
+       <projectUrl>https://github.com/silegis-mg/XadesSigner</projectUrl>
+       <requireLicenseAcceptance>false</requireLicenseAcceptance>
+       <description>
+         Xamarin and Windows library to sign XML files according to the XAdES standard. Right now only XAdES-BES signatures are supported.
+       </description>
+       <summary>
+         Xamarin and Windows library to sign XML files according to the XAdES standard.
+       </summary>
+       <tags>xamarin, xamarin.forms, android, ios, xades, xml signatures</tags>
+	   <dependencies>
+	      <dependency id="Portable.BouncyCastle-Signed" version="1.7.0.2" />
+       </dependencies>
+   </metadata>
+   <files>
+     <!--Core-->
+     <file src="..\src\XAdESSigner.Interfaces\bin\Release\Almg.Signer.XAdES.Interfaces.dll" target="lib\portable-net45+wp8+wpa81+win8+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Almg.Signer.XAdES.Interfaces.dll" />
+     <file src="..\src\XAdESSigner.Interfaces\bin\Release\Almg.Signer.XAdES.Interfaces.pdb" target="lib\portable-net45+wp8+wpa81+win8+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Almg.Signer.XAdES.Interfaces.pdb" />
+     <file src="..\src\XAdESSigner\bin\Release\Almg.Signer.XAdES.dll" target="lib\portable-net45+wp8+wpa81+win8+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Almg.Signer.XAdES.dll" />
+ 
+     <!--Xamarin.Android-->
+     <file src="..\src\XAdESSigner.Interfaces\bin\Release\Almg.Signer.XAdES.Interfaces.dll" target="lib\MonoAndroid10\Almg.Signer.XAdES.Interfaces.dll" />
+	 <file src="..\src\XAdESSigner.Interfaces\bin\Release\Almg.Signer.XAdES.Interfaces.pdb" target="lib\MonoAndroid10\Almg.Signer.XAdES.Interfaces.pdb" />
+	 <file src="..\src\XAdESSigner.Android\bin\Release\Almg.Signer.XAdES.dll" target="lib\MonoAndroid10\Almg.Signer.XAdES.dll" />
+     <file src="..\src\XAdESSigner.Android\bin\Release\Almg.Signer.XAdES.pdb" target="lib\MonoAndroid10\Almg.Signer.XAdES.pdb" />
+	 
+     <!-- Xamarin.iOS Unified -->
+	 <file src="..\src\XAdESSigner.Interfaces\bin\Release\Almg.Signer.XAdES.Interfaces.dll" target="lib\Xamarin.iOS10\Almg.Signer.XAdES.Interfaces.dll" />
+     <file src="..\src\XAdESSigner.Interfaces\bin\Release\Almg.Signer.XAdES.Interfaces.pdb" target="lib\Xamarin.iOS10\Almg.Signer.XAdES.Interfaces.pdb" />
+	 <file src="..\src\XAdESSigner.iOS\bin\Release\Almg.Signer.XAdES.dll" target="lib\Xamarin.iOS10\Almg.Signer.XAdES.dll" />
+     <file src="..\src\XAdESSigner.iOS\bin\Release\Almg.Signer.XAdES.pdb" target="lib\Xamarin.iOS10\Almg.Signer.XAdES.dll.mdb" />    
+		 
+     <!--Win Store-->
+	 <file src="..\src\XAdESSigner.Interfaces\bin\Release\Almg.Signer.XAdES.Interfaces.dll" target="lib\net45\Almg.Signer.XAdES.Interfaces.dll" />
+     <file src="..\src\XAdESSigner.Interfaces\bin\Release\Almg.Signer.XAdES.Interfaces.pdb" target="lib\net45\Almg.Signer.XAdES.Interfaces.pdb" />
+	 <file src="..\src\XAdESSigner.Windows\bin\Release\Almg.Signer.XAdES.dll" target="lib\net45\Almg.Signer.XAdES.dll" />
+     <file src="..\src\XAdESSigner.Windows\bin\Release\Almg.Signer.XAdES.pdb" target="lib\net45\Almg.Signer.XAdES.pdb" />
+	 
+   </files>
+</package>

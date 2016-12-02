@@ -1,0 +1,53 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XAdESSigner", "XAdESSigner\XAdESSigner.csproj", "{184055C3-B731-46DF-A97C-580B13A41B72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XAdESSigner.Android", "XAdESSigner.Android\XAdESSigner.Android.csproj", "{96511503-BF5E-407B-A4CC-31B4FC7AFF2E}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "XAdESSigner.Shared", "XAdESSigner.Shared\XAdESSigner.Shared.shproj", "{A5754717-9E3B-4E5D-8611-7A92157D9BAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XAdESSigner.Windows", "XAdESSigner.Windows\XAdESSigner.Windows.csproj", "{C4C3BBE2-53CA-4DA2-AF7A-57AA45A3B1C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XAdESSigner.Interfaces", "XAdESSigner.Interfaces\XAdESSigner.Interfaces.csproj", "{08655F1E-DCEA-497A-A277-6728D382C4B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XAdESSigner.iOS", "XAdESSigner.iOS\XAdESSigner.iOS.csproj", "{18352B65-248F-41E0-9AD2-88E7A41D1D5C}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		XAdESSigner.Shared\XAdESSigner.Shared.projitems*{18352b65-248f-41e0-9ad2-88e7a41d1d5c}*SharedItemsImports = 4
+		XAdESSigner.Shared\XAdESSigner.Shared.projitems*{c4c3bbe2-53ca-4da2-af7a-57aa45a3b1c7}*SharedItemsImports = 4
+		XAdESSigner.Shared\XAdESSigner.Shared.projitems*{96511503-bf5e-407b-a4cc-31b4fc7aff2e}*SharedItemsImports = 4
+		XAdESSigner.Shared\XAdESSigner.Shared.projitems*{a5754717-9e3b-4e5d-8611-7a92157d9bac}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{184055C3-B731-46DF-A97C-580B13A41B72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{184055C3-B731-46DF-A97C-580B13A41B72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{184055C3-B731-46DF-A97C-580B13A41B72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{184055C3-B731-46DF-A97C-580B13A41B72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96511503-BF5E-407B-A4CC-31B4FC7AFF2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96511503-BF5E-407B-A4CC-31B4FC7AFF2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96511503-BF5E-407B-A4CC-31B4FC7AFF2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96511503-BF5E-407B-A4CC-31B4FC7AFF2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4C3BBE2-53CA-4DA2-AF7A-57AA45A3B1C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4C3BBE2-53CA-4DA2-AF7A-57AA45A3B1C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4C3BBE2-53CA-4DA2-AF7A-57AA45A3B1C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4C3BBE2-53CA-4DA2-AF7A-57AA45A3B1C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08655F1E-DCEA-497A-A277-6728D382C4B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08655F1E-DCEA-497A-A277-6728D382C4B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08655F1E-DCEA-497A-A277-6728D382C4B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08655F1E-DCEA-497A-A277-6728D382C4B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18352B65-248F-41E0-9AD2-88E7A41D1D5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18352B65-248F-41E0-9AD2-88E7A41D1D5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18352B65-248F-41E0-9AD2-88E7A41D1D5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18352B65-248F-41E0-9AD2-88E7A41D1D5C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
