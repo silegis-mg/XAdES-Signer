@@ -123,6 +123,7 @@ namespace Mono.Xml {
 
             output.Position = 0;
             XmlDocument outputDocument = new XmlDocument();
+            outputDocument.PreserveWhitespace = true;
             outputDocument.Load(output);
             return outputDocument;
         }
