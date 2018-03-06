@@ -48,7 +48,7 @@ namespace System.Security.XmlCrypto {
 			set { Node = value; }
 		}
 
-		public override XmlElement GetXml () 
+		public override XmlElement GetXml (XmlNamespaceManager xmlNamespaceManager) 
 		{
 			return Node;
 		}

@@ -36,13 +36,14 @@ using System.Xml;
 namespace System.Security.XmlCrypto {
 
 	public class Signature {
-		static XmlNamespaceManager dsigNsmgr;
+		XmlNamespaceManager dsigNsmgr;
 		
-		static Signature ()
+		public Signature ()
 		{
-			dsigNsmgr = new XmlNamespaceManager (new NameTable ());
-			dsigNsmgr.AddNamespace ("xd", XmlSignature.NamespaceURI);
-		}
+			dsigNsmgr = new XmlNamespaceManager (new NameTable());
+			dsigNsmgr.AddNamespace ("ds", XmlSignature.NamespaceURI);
+            list = new ArrayList();
+        }
 
 		private ArrayList list;
 		private SignedInfo info;
@@ -51,8 +52,9 @@ namespace System.Security.XmlCrypto {
 		private byte[] signature;
 		private XmlElement element;
 
-		public Signature () 
+		public Signature(XmlNamespaceManager nm) 
 		{
+            dsigNsmgr = nm;
 			list = new ArrayList ();
 		}
 
@@ -119,18 +121,19 @@ namespace System.Security.XmlCrypto {
 				throw new CryptographicException ("SignatureValue");
 
 			if (document == null)
-				document = new XmlDocument ();
+				document = new XmlDocument (dsigNsmgr.NameTable);
+            var prefix = dsigNsmgr.LookupPrefix(XmlSignature.NamespaceURI);
 
-			XmlElement xel = document.CreateElement (XmlSignature.ElementNames.Signature, XmlSignature.NamespaceURI);
+            XmlElement xel = document.CreateElement (prefix, XmlSignature.ElementNames.Signature, XmlSignature.NamespaceURI);
 			if (id != null)
 				xel.SetAttribute (XmlSignature.AttributeNames.Id, id);
 
-			XmlNode xn = info.GetXml ();
+			XmlNode xn = info.GetXml (dsigNsmgr);
 			XmlNode newNode = document.ImportNode (xn, true);
 			xel.AppendChild (newNode);
 
 			if (signature != null) {
-				XmlElement sv = document.CreateElement (XmlSignature.ElementNames.SignatureValue, XmlSignature.NamespaceURI);
+				XmlElement sv = document.CreateElement (prefix, XmlSignature.ElementNames.SignatureValue, XmlSignature.NamespaceURI);
 				sv.InnerText = Convert.ToBase64String (signature);
                 if (SignatureValueId != null)
                 {
@@ -140,14 +143,14 @@ namespace System.Security.XmlCrypto {
 			}
 
 			if (key != null) {
-				xn = key.GetXml ();
+				xn = key.GetXml (dsigNsmgr);
 				newNode = document.ImportNode (xn, true);
 				xel.AppendChild (newNode);
 			}
 
 			if (list.Count > 0) {
 				foreach (DataObject obj in list) {
-					xn = obj.GetXml ();
+					xn = obj.GetXml (this.dsigNsmgr);
 					newNode = document.ImportNode (xn, true);
 					xel.AppendChild (newNode);
 				}
@@ -188,7 +191,7 @@ namespace System.Security.XmlCrypto {
 					key.LoadXml (kinfo);
 				}
 
-				XmlNodeList xnl = value.SelectNodes ("xd:Object", dsigNsmgr);
+				XmlNodeList xnl = value.SelectNodes ("ds:Object", dsigNsmgr);
 				foreach (XmlElement xn in xnl) {
 					DataObject obj = new DataObject ();
 					obj.LoadXml (xn);

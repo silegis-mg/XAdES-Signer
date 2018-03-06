@@ -37,7 +37,7 @@ namespace System.Security.XmlCrypto {
 		{
 		}
 
-		public abstract XmlElement GetXml ();
+		public abstract XmlElement GetXml (XmlNamespaceManager manager);
 
 		public abstract void LoadXml (XmlElement element);
 	}

@@ -79,7 +79,7 @@ namespace System.Security.XmlCrypto {
 			// we add References afterward so we don't end up with extraneous
 			// xmlns="..." in each reference elements.
 			foreach (Reference r in references) {
-				XmlNode xn = r.GetXml ();
+				XmlNode xn = r.GetXml (null);
 				XmlNode newNode = document.ImportNode (xn, true);
 				xel.AppendChild (newNode);
 			}

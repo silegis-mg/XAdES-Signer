@@ -58,6 +58,7 @@ namespace System.Security.XmlCrypto {
 		private void Build (string id, string mimeType, string encoding, XmlElement data) 
 		{
 			XmlDocument document = new XmlDocument ();
+            //string prefix = namespaceManager.LookupPrefix(XmlSignature.NamespaceURI);
 			XmlElement xel = document.CreateElement (XmlSignature.ElementNames.Object, XmlSignature.NamespaceURI);
 			if (id != null) {
 				xel.SetAttribute (XmlSignature.AttributeNames.Id, id);
@@ -135,13 +136,14 @@ namespace System.Security.XmlCrypto {
 			}
 		}
 
-		public XmlElement GetXml () 
+		public XmlElement GetXml (XmlNamespaceManager namespaceMgr) 
 		{
-			if (propertyModified) {
+			//if (propertyModified) {
 				// It looks MS.NET returns element which comes from new XmlDocument every time
 				XmlElement oldElement = element;
-				XmlDocument doc = new XmlDocument ();
-				element = doc.CreateElement (XmlSignature.ElementNames.Object, XmlSignature.NamespaceURI);
+				XmlDocument doc = new XmlDocument (namespaceMgr.NameTable);
+                var prefix = namespaceMgr.LookupPrefix(XmlSignature.NamespaceURI);
+				element = doc.CreateElement (prefix, XmlSignature.ElementNames.Object, XmlSignature.NamespaceURI);
 				foreach (XmlAttribute attribute in oldElement.Attributes) {
 					switch (attribute.Name) {
 					case XmlSignature.AttributeNames.Id:
@@ -153,7 +155,7 @@ namespace System.Security.XmlCrypto {
 				}
 				foreach (XmlNode n in oldElement.ChildNodes)
 					element.AppendChild (doc.ImportNode (n, true));
-			}
+			//}
 			return element;
 		}
 

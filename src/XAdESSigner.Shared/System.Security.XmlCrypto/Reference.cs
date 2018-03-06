@@ -114,7 +114,7 @@ namespace System.Security.XmlCrypto {
 			chain.Add (transform);
 		}
 
-		public XmlElement GetXml () 
+		public XmlElement GetXml (XmlNamespaceManager namespaceManager) 
 		{
 			if (element != null)
 				return element;
@@ -124,8 +124,13 @@ namespace System.Security.XmlCrypto {
 			if (digestValue == null)
 				throw new NullReferenceException ("DigestValue");
 
-			XmlDocument document = new XmlDocument ();
-			XmlElement xel = document.CreateElement (XmlSignature.ElementNames.Reference, XmlSignature.NamespaceURI);
+			XmlDocument document = new XmlDocument (namespaceManager.NameTable);
+
+            var prefix = "";
+            if(namespaceManager!=null)
+                prefix = namespaceManager.LookupPrefix(XmlSignature.NamespaceURI);
+
+            XmlElement xel = document.CreateElement (prefix, XmlSignature.ElementNames.Reference, XmlSignature.NamespaceURI);
 			if (id != null)
 				xel.SetAttribute (XmlSignature.AttributeNames.Id, id);
 			if (uri != null)
@@ -134,20 +139,20 @@ namespace System.Security.XmlCrypto {
 				xel.SetAttribute (XmlSignature.AttributeNames.Type, type);
 
 			if (chain.Count > 0) {
-				XmlElement ts = document.CreateElement (XmlSignature.ElementNames.Transforms, XmlSignature.NamespaceURI);
+				XmlElement ts = document.CreateElement (prefix, XmlSignature.ElementNames.Transforms, XmlSignature.NamespaceURI);
 				foreach (Transform t in chain) {
-					XmlNode xn = t.GetXml ();
+					XmlNode xn = t.GetXml (namespaceManager);
 					XmlNode newNode = document.ImportNode (xn, true);
 					ts.AppendChild (newNode);
 				}
 				xel.AppendChild (ts);
 			}
 
-			XmlElement dm = document.CreateElement (XmlSignature.ElementNames.DigestMethod, XmlSignature.NamespaceURI);
+			XmlElement dm = document.CreateElement (prefix, XmlSignature.ElementNames.DigestMethod, XmlSignature.NamespaceURI);
 			dm.SetAttribute (XmlSignature.AttributeNames.Algorithm, digestMethod);
 			xel.AppendChild (dm);
 
-			XmlElement dv = document.CreateElement (XmlSignature.ElementNames.DigestValue, XmlSignature.NamespaceURI);
+			XmlElement dv = document.CreateElement (prefix, XmlSignature.ElementNames.DigestValue, XmlSignature.NamespaceURI);
 			dv.InnerText = Convert.ToBase64String (digestValue);
 			xel.AppendChild (dv);
 

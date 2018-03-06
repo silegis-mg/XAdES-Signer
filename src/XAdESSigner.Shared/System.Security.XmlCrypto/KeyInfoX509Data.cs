@@ -171,20 +171,23 @@ namespace System.Security.XmlCrypto {
 			SubjectNameList.Add (subjectName);
 		}
 
-		public override XmlElement GetXml () 
+		public override XmlElement GetXml (XmlNamespaceManager xmlNamespaceManager) 
 		{
-			XmlDocument document = new XmlDocument ();
-			XmlElement xel = document.CreateElement (XmlSignature.ElementNames.X509Data, XmlSignature.NamespaceURI);
+			XmlDocument document = new XmlDocument (xmlNamespaceManager.NameTable);
+
+            var prefix = xmlNamespaceManager.LookupPrefix(XmlSignature.NamespaceURI);
+
+			XmlElement xel = document.CreateElement (prefix, XmlSignature.ElementNames.X509Data, XmlSignature.NamespaceURI);
 			// FIXME: hack to match MS implementation
-			xel.SetAttribute ("xmlns", XmlSignature.NamespaceURI);
+			//xel.SetAttribute ("xmlns", XmlSignature.NamespaceURI);
 			// <X509IssuerSerial>
 			if ((IssuerSerialList != null) && (IssuerSerialList.Count > 0)) {
 				foreach (X509IssuerSerial iser in IssuerSerialList) {
-					XmlElement isl = document.CreateElement (XmlSignature.ElementNames.X509IssuerSerial, XmlSignature.NamespaceURI);
-					XmlElement xin = document.CreateElement (XmlSignature.ElementNames.X509IssuerName, XmlSignature.NamespaceURI);
+					XmlElement isl = document.CreateElement (prefix, XmlSignature.ElementNames.X509IssuerSerial, XmlSignature.NamespaceURI);
+					XmlElement xin = document.CreateElement (prefix, XmlSignature.ElementNames.X509IssuerName, XmlSignature.NamespaceURI);
 					xin.InnerText = iser.IssuerName;
 					isl.AppendChild (xin);
- 					XmlElement xsn = document.CreateElement (XmlSignature.ElementNames.X509SerialNumber, XmlSignature.NamespaceURI);
+ 					XmlElement xsn = document.CreateElement (prefix, XmlSignature.ElementNames.X509SerialNumber, XmlSignature.NamespaceURI);
 					xsn.InnerText = iser.SerialNumber;
 					isl.AppendChild (xsn);
 					xel.AppendChild (isl);
@@ -193,7 +196,7 @@ namespace System.Security.XmlCrypto {
 			// <X509SKI>
 			if ((SubjectKeyIdList != null) && (SubjectKeyIdList.Count > 0)) {
 				foreach (byte[] skid in SubjectKeyIdList) {
-					XmlElement ski = document.CreateElement (XmlSignature.ElementNames.X509SKI, XmlSignature.NamespaceURI);
+					XmlElement ski = document.CreateElement (prefix, XmlSignature.ElementNames.X509SKI, XmlSignature.NamespaceURI);
 					ski.InnerText = Convert.ToBase64String (skid);
 					xel.AppendChild (ski);
 				}
@@ -201,7 +204,7 @@ namespace System.Security.XmlCrypto {
 			// <X509SubjectName>
 			if ((SubjectNameList != null) && (SubjectNameList.Count > 0)) {
 				foreach (string subject in SubjectNameList) {
-					XmlElement sn = document.CreateElement (XmlSignature.ElementNames.X509SubjectName, XmlSignature.NamespaceURI);
+					XmlElement sn = document.CreateElement (prefix, XmlSignature.ElementNames.X509SubjectName, XmlSignature.NamespaceURI);
 					sn.InnerText = subject;
 					xel.AppendChild (sn);
 				}
@@ -209,14 +212,14 @@ namespace System.Security.XmlCrypto {
 			// <X509Certificate>
 			if ((X509CertificateList != null) && (X509CertificateList.Count > 0)) {
 				foreach (X509Certificate x509 in X509CertificateList) {
-					XmlElement cert = document.CreateElement (XmlSignature.ElementNames.X509Certificate, XmlSignature.NamespaceURI);
+					XmlElement cert = document.CreateElement (prefix, XmlSignature.ElementNames.X509Certificate, XmlSignature.NamespaceURI);
 					cert.InnerText = Convert.ToBase64String (x509.GetEncoded());
 					xel.AppendChild (cert);
 				}
 			}
 			// only one <X509CRL> 
 			if (x509crl != null) {
-				XmlElement crl = document.CreateElement (XmlSignature.ElementNames.X509CRL, XmlSignature.NamespaceURI);
+				XmlElement crl = document.CreateElement (prefix, XmlSignature.ElementNames.X509CRL, XmlSignature.NamespaceURI);
 				crl.InnerText = Convert.ToBase64String (x509crl);
 				xel.AppendChild (crl);
 			}

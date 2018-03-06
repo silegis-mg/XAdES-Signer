@@ -31,9 +31,9 @@ namespace Almg.Signer.XAdES
             signedXML.Certificate = certificate;
             signedXML.SignedElementXPath = signedElementXPath;
             signedXML.PolicyId = policyId;
-            signedXML.ComputeXAdESSignature();
-
             signedXML.SignedInfo.CanonicalizationMethod = "http://www.w3.org/2001/10/xml-exc-c14n#";
+
+            signedXML.ComputeXAdESSignature();
 
             XmlElement xmlDigitalSignature = signedXML.GetXml();
 

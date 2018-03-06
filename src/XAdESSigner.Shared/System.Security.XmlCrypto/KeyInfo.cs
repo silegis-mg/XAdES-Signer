@@ -78,16 +78,18 @@ namespace System.Security.XmlCrypto {
 			return TypeList.GetEnumerator ();
 		}
 
-		public XmlElement GetXml () 
+		public XmlElement GetXml (XmlNamespaceManager xmlNamespaceManager) 
 		{
 			XmlDocument document = new XmlDocument ();
-			XmlElement xel = document.CreateElement (XmlSignature.ElementNames.KeyInfo, XmlSignature.NamespaceURI);
+            var prefix = xmlNamespaceManager.LookupPrefix(XmlSignature.NamespaceURI);
+			XmlElement xel = document.CreateElement (prefix, XmlSignature.ElementNames.KeyInfo, XmlSignature.NamespaceURI);
 			// we add References afterward so we don't end up with extraneous
 			// xmlns="..." in each reference elements.
 			foreach (KeyInfoClause kic in Info) {
-				XmlNode xn = kic.GetXml ();
+				XmlNode xn = kic.GetXml (xmlNamespaceManager);
 				XmlNode newNode = document.ImportNode (xn, true);
-				xel.AppendChild (newNode);
+                newNode.Prefix = prefix;
+                xel.AppendChild (newNode);
 			}
 			return xel;
 		}

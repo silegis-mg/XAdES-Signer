@@ -73,7 +73,7 @@ namespace System.Security.XmlCrypto {
 		}
 
 
-		public override XmlElement GetXml () 
+		public override XmlElement GetXml (XmlNamespaceManager xmlNamespaceManager) 
 		{
 			if (element != null)
 				return element;

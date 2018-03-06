@@ -52,7 +52,7 @@ namespace System.Security.XmlCrypto {
 			set { dsa = value; }
 		}
 
-		public override XmlElement GetXml () 
+		public override XmlElement GetXml (XmlNamespaceManager xmlNamespaceManager) 
 		{
 			XmlDocument document = new XmlDocument ();
 			XmlElement xel = document.CreateElement (XmlSignature.ElementNames.KeyValue, XmlSignature.NamespaceURI);

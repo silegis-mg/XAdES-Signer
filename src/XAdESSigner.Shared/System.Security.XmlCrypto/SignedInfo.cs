@@ -48,7 +48,7 @@ namespace System.Security.XmlCrypto {
 		public SignedInfo() 
 		{
 			references = new ArrayList ();
-			c14nMethod = "http://www.w3.org/2001/10/xml-exc-c14n#";
+            c14nMethod = "http://www.w3.org/2001/10/xml-exc-c14n#";
 		}
 
 		public string CanonicalizationMethod {
@@ -130,7 +130,7 @@ namespace System.Security.XmlCrypto {
 			return references.GetEnumerator ();
 		}
 
-		public XmlElement GetXml ()
+		public XmlElement GetXml (XmlNamespaceManager xmlNamespaceManager)
 		{
 			if (element != null)
 				return element;
@@ -140,21 +140,22 @@ namespace System.Security.XmlCrypto {
 			if (references.Count == 0)
 				throw new CryptographicException ("References empty");
 
-			XmlDocument document = new XmlDocument ();
-			XmlElement xel = document.CreateElement (XmlSignature.ElementNames.SignedInfo, XmlSignature.NamespaceURI);
+			XmlDocument document = new XmlDocument (xmlNamespaceManager.NameTable);
+            var prefix = xmlNamespaceManager.LookupPrefix(XmlSignature.NamespaceURI);
+			XmlElement xel = document.CreateElement (prefix, XmlSignature.ElementNames.SignedInfo, XmlSignature.NamespaceURI);
 			if (id != null)
 				xel.SetAttribute (XmlSignature.AttributeNames.Id, id);
 
 			if (c14nMethod != null) {
-				XmlElement c14n = document.CreateElement (XmlSignature.ElementNames.CanonicalizationMethod, XmlSignature.NamespaceURI);
+				XmlElement c14n = document.CreateElement (prefix, XmlSignature.ElementNames.CanonicalizationMethod, XmlSignature.NamespaceURI);
 				c14n.SetAttribute (XmlSignature.AttributeNames.Algorithm, c14nMethod);
 				xel.AppendChild (c14n);
 			}
 			if (signatureMethod != null) {
-				XmlElement sm = document.CreateElement (XmlSignature.ElementNames.SignatureMethod, XmlSignature.NamespaceURI);
+				XmlElement sm = document.CreateElement (prefix, XmlSignature.ElementNames.SignatureMethod, XmlSignature.NamespaceURI);
 				sm.SetAttribute (XmlSignature.AttributeNames.Algorithm, signatureMethod);
 				if (signatureLength != null) {
-					XmlElement hmac = document.CreateElement (XmlSignature.ElementNames.HMACOutputLength, XmlSignature.NamespaceURI);
+					XmlElement hmac = document.CreateElement (prefix, XmlSignature.ElementNames.HMACOutputLength, XmlSignature.NamespaceURI);
 					hmac.InnerText = signatureLength;
 					sm.AppendChild (hmac);
 				}
@@ -168,8 +169,9 @@ namespace System.Security.XmlCrypto {
 			// we add References afterward so we don't end up with extraneous
 			// xmlns="..." in each reference elements.
 			foreach (Reference r in references) {
-				XmlNode xn = r.GetXml ();
+				XmlNode xn = r.GetXml (xmlNamespaceManager);
 				XmlNode newNode = document.ImportNode (xn, true);
+                newNode.Prefix = prefix;
 				xel.AppendChild (newNode);
 			}
 

@@ -100,11 +100,12 @@ namespace System.Security.XmlCrypto {
 
 		public abstract object GetOutput (Type type);
 
-		public XmlElement GetXml () 
+		public XmlElement GetXml (XmlNamespaceManager xmlNamespaceManager) 
 		{
-			XmlDocument document = new XmlDocument ();
+			XmlDocument document = new XmlDocument (xmlNamespaceManager.NameTable);
 			document.XmlResolver = GetResolver ();
-			XmlElement xel = document.CreateElement (XmlSignature.ElementNames.Transform, XmlSignature.NamespaceURI);
+            var prefix = xmlNamespaceManager.LookupPrefix(XmlSignature.NamespaceURI);
+			XmlElement xel = document.CreateElement (prefix, XmlSignature.ElementNames.Transform, XmlSignature.NamespaceURI);
 			xel.SetAttribute (XmlSignature.AttributeNames.Algorithm, algo);
 			XmlNodeList xnl = this.GetInnerXml ();
 			if (xnl != null) {

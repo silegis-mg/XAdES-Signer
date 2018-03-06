@@ -18,14 +18,25 @@ namespace System.Security.XmlCrypto.XAdES
         private const string XML_DSIG_SHA256_NAMESPACE_URI = "http://www.w3.org/2001/04/xmlenc#sha256";
 
         private XmlDocument document;
+        private XmlNamespaceManager xmlNamespaceManager;
 
         public X509Certificate Certificate { get; set; }
         public PolicyIdentifier PolicyId { get; set; }
         public string SignedElementXPath { get; set; }
+        private SignedXml signedXML;
 
-        public XAdESSignedXml(XmlDocument document): base(document) {
+        public XAdESSignedXml(XmlDocument document) : this(document, new XmlNamespaceManager(document.NameTable))
+        {
+
+        }
+
+        public XAdESSignedXml(XmlDocument document, XmlNamespaceManager namespaceManager): base(document, namespaceManager) {
             this.document = document;
             SignedElementXPath = "";
+
+            namespaceManager.AddNamespace("xades", XADES_NAMESPACE_URI);
+            namespaceManager.AddNamespace("ds", XmlDsigConstants.XmlDsigNamespaceUrl);
+            xmlNamespaceManager = namespaceManager;
         }
 
         public void ComputeXAdESSignature()
@@ -46,7 +57,10 @@ namespace System.Security.XmlCrypto.XAdES
         private KeyInfo GetCertInfo(X509Certificate cert)
         {
             KeyInfo keyInfo = new KeyInfo();
+
             KeyInfoX509Data keyInfoData = new KeyInfoX509Data(cert.GetEncoded());
+            keyInfoData.AddIssuerSerial(cert.IssuerDN.ToString(), cert.SerialNumber.ToString());
+            keyInfoData.AddSubjectName(cert.SubjectDN.ToString());
             keyInfo.AddClause(keyInfoData);
             return keyInfo;
         }
@@ -60,7 +74,11 @@ namespace System.Security.XmlCrypto.XAdES
             //XmlDsigEnvelopedSignatureTransform env = new XmlDsigEnvelopedSignatureTransform();
             //reference.AddTransform(env);
 
-            XmlDsigExcC14NTransform c14t = new XmlDsigExcC14NTransform();
+            //XmlDsigExcC14NTransform c14t = new XmlDsigExcC14NTransform();
+            //reference.AddTransform(c14t);
+
+            //defaults to Inclusive Canonicalization. TODO: Add API option to choose canonicalization method
+            XmlDsigC14NTransform c14t = new XmlDsigC14NTransform();
             reference.AddTransform(c14t);
 
             return reference;
@@ -76,7 +94,7 @@ namespace System.Security.XmlCrypto.XAdES
             var signedPropertiesNode = CreateSignedPropertiesNode(document, qualifyingPropertiesNode);
 
             var signedSignatureProperties = CreateSignedSignaturePropertiesNode(document, signedPropertiesNode);
-            //CreateSigningTimeNode(document, signedSignatureProperties);
+            CreateSigningTimeNode(document, signedSignatureProperties);
             CreateSigningCertificateNode(document, signedSignatureProperties, Certificate);
             CreateSignaturePolicyIdentifier(document, signedSignatureProperties);
 
@@ -159,8 +177,10 @@ namespace System.Security.XmlCrypto.XAdES
         }
 
         private XmlElement CreateQualifyingPropertiesNode(SignedXml signedXml, XmlDocument document)
-        {
+        {       
             var result = document.CreateElement("QualifyingProperties", XADES_NAMESPACE_URI);
+            result.Prefix = xmlNamespaceManager.LookupPrefix(XADES_NAMESPACE_URI);
+
             result.SetAttribute("Target", "#" + signedXml.Signature.Id);
             return result;
         }
@@ -175,12 +195,18 @@ namespace System.Security.XmlCrypto.XAdES
             XmlDocument policyXML = new XmlDocument();
             policyXML.Load(new MemoryStream(PolicyId.PolicyFile));
             XmlNamespaceManager ns = new XmlNamespaceManager(policyXML.NameTable);
-            ns.AddNamespace("XAdES", "http://uri.etsi.org/01903/v1.3.2#");
-            var policyNode = policyXML.SelectSingleNode(@"//XAdES:Identifier", ns);
+            ns.AddNamespace("xades", "http://uri.etsi.org/01903/v1.3.2#");
+            var policyNode = policyXML.SelectSingleNode(@"//xades:Identifier", ns);
 
             var policyID = policyNode.InnerText;
             var policyQualifier = policyNode.Attributes["Qualifier"].Value;
-            var hash = XmlEncHashes.ComputeHash(XmlEncHashes.XmlDsigSHA256Url, PolicyId.PolicyFile);
+
+            var hash = PolicyId.PolicyHash;
+            if(hash==null)
+            {
+                //if a hash was not supplied, calculate the hash using the raw byte stream of the supplied policy
+                hash = Convert.ToBase64String(XmlEncHashes.ComputeHash(XmlEncHashes.XmlDsigSHA256Url, PolicyId.PolicyFile));
+            }
 
             var signaturePolicyIdentifier = CreateXMLNode(document, "SignaturePolicyIdentifier", XADES_NAMESPACE_URI, signedSignaturePropertiesNode);
             var signaturePolicyId = CreateXMLNode(document, "SignaturePolicyId", XADES_NAMESPACE_URI, signaturePolicyIdentifier);
@@ -194,7 +220,7 @@ namespace System.Security.XmlCrypto.XAdES
             var digestMethod = CreateXMLNode(document, "DigestMethod", XmlDsigConstants.XmlDsigNamespaceUrl, sigPolicyHash);
             digestMethod.SetAttribute("Algorithm", XmlEncHashes.XmlDsigSHA256Url);
             
-            CreateXMLNode(document, "DigestValue", Convert.ToBase64String(hash), XmlDsigConstants.XmlDsigNamespaceUrl, sigPolicyHash);
+            CreateXMLNode(document, "DigestValue", hash, XmlDsigConstants.XmlDsigNamespaceUrl, sigPolicyHash);
 
             var sigPolicyQualifiers = CreateXMLNode(document, "SigPolicyQualifiers", XADES_NAMESPACE_URI, signaturePolicyId);
             var sigPolicyQualifier = CreateXMLNode(document, "SigPolicyQualifier", XADES_NAMESPACE_URI, sigPolicyQualifiers);
@@ -207,7 +233,7 @@ namespace System.Security.XmlCrypto.XAdES
 
         public XmlElement CreateXMLNode(XmlDocument document, string nodeName, string nameSpace, XmlElement rootNode)
         {
-            string prefix = document.DocumentElement.GetPrefixOfNamespace(nameSpace);
+            string prefix = xmlNamespaceManager.LookupPrefix(nameSpace);
 
             XmlElement result;
             result = document.CreateElement(prefix, nodeName, nameSpace);
@@ -217,8 +243,10 @@ namespace System.Security.XmlCrypto.XAdES
 
         public XmlElement CreateXMLNode(XmlDocument document, string nodeName, string text, string nameSpace, XmlElement rootNode)
         {
+            string prefix = xmlNamespaceManager.LookupPrefix(nameSpace);
             var newNode = CreateXMLNode(document, nodeName, nameSpace, rootNode);
             newNode.InnerText = text;
+            newNode.Prefix = prefix;
             return newNode;
         }
 

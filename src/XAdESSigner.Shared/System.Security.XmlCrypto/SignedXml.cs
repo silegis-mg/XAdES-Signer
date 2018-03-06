@@ -59,25 +59,27 @@ namespace System.Security.XmlCrypto {
 		// FIXME: enable it after CAS implementation
 		private XmlResolver xmlResolver = new XmlUrlResolver ();
 		private ArrayList manifests;
+        private XmlNamespaceManager namespaceManager;
 
-		private static readonly char [] whitespaceChars = new char [] {' ', '\r', '\n', '\t'};
+        private static readonly char [] whitespaceChars = new char [] {' ', '\r', '\n', '\t'};
 
-		public SignedXml () 
+		public SignedXml (XmlNamespaceManager namespaceManager) 
 		{
 			m_signature = new Signature ();
 			m_signature.SignedInfo = new SignedInfo ();
+            this.namespaceManager = namespaceManager;
 			hashes = new Hashtable (2); // 98% SHA1 for now
             DebugOutput = false;
 		}
 
-		public SignedXml (XmlDocument document) : this ()
+		public SignedXml (XmlDocument document, XmlNamespaceManager namespaceManager) : this (namespaceManager)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
 			envdoc = document;
 		}
 
-		public SignedXml (XmlElement elem) : this ()
+		public SignedXml (XmlElement elem, XmlNamespaceManager namespaceManager) : this(namespaceManager)
 		{
 			if (elem == null)
 				throw new ArgumentNullException ("elem");
@@ -277,7 +279,7 @@ namespace System.Security.XmlCrypto {
 					XmlElement found = null;
 					foreach (DataObject obj in m_signature.ObjectList) {
 						if (obj.Id == objectName) {
-							found = obj.GetXml ();
+							found = obj.GetXml (this.namespaceManager);
 							found.SetAttribute ("xmlns", XmlDsigConstants.XmlDsigNamespaceUrl);
 							doc.AppendChild (doc.ImportNode (found, true));
 							// FIXME: there should be theoretical justification of copying namespace declaration nodes this way.
@@ -326,8 +328,7 @@ namespace System.Security.XmlCrypto {
 				}
 				else {
                     // apply default C14N transformation
-                    //TODO: s = ApplyTransform (new XmlDsigC14NTransform (), doc);
-                    s = ApplyTransform(new XmlDsigExcC14NTransform(), doc);
+                    s = ApplyTransform(new XmlDsigC14NTransform(), doc);
                 }
             }
 
@@ -406,7 +407,7 @@ namespace System.Security.XmlCrypto {
 				// when creating signatures
 				XmlDocument doc = new XmlDocument ();
 				doc.PreserveWhitespace = true;
-				doc.LoadXml (m_signature.SignedInfo.GetXml ().OuterXml);
+				doc.LoadXml (m_signature.SignedInfo.GetXml (this.namespaceManager).OuterXml);
 				if (envdoc != null)
 				foreach (XmlAttribute attr in envdoc.DocumentElement.SelectNodes ("namespace::*")) {
 					if (attr.LocalName == "xml")
